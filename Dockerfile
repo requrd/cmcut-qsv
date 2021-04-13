@@ -75,5 +75,6 @@ RUN cd /app && \
     npm run build
 
 WORKDIR /app
+COPY config /app/config
 ENTRYPOINT ["npm"]
 CMD ["start"]
