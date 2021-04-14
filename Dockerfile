@@ -1,4 +1,4 @@
-FROM ghcr.io/tobitti0/docker-avisynthplus:4.3.1-ubuntu2004 as build
+FROM ghcr.io/tobitti0/docker-avisynthplus:4.3.1-nvidia2004 as build
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VERSION=14
@@ -49,7 +49,7 @@ RUN set -xe && \
     cd /tmp && \
     git clone https://github.com/l3tnun/EPGStation.git -b ${EPGSTATION_VERSION}
 
-FROM ghcr.io/tobitti0/docker-avisynthplus:4.3.1-ubuntu2004 as release
+FROM ghcr.io/tobitti0/docker-avisynthplus:4.3.1-nvidia2004 as release
 ENV        DEBIAN_FRONTEND=noninteractive
 MAINTAINER  Tobitti <mail@tobitti.net>
 COPY --from=build /join_logo_scp_trial /join_logo_scp_trial
