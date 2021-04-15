@@ -12,7 +12,6 @@ const isDualMono = parseInt(process.env.AUDIOCOMPONENTTYPE, 10) == 2;
 const audioBitrate = videoHeight > 720 ? '192k' : '128k';
 const preset = 'slow';
 const codec = 'hevc_nvenc';
-const vbrq = 23;
 
 const args = [
     '-y', 
