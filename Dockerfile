@@ -76,5 +76,6 @@ RUN cd /app && \
 
 WORKDIR /app
 COPY config /app/config
+COPY logos /join_logo_scp_trial/logo
 ENTRYPOINT ["npm"]
 CMD ["start"]
