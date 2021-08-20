@@ -28,7 +28,7 @@ const args = [
 ];
 const preset = 'slow';
 const codec = 'hevc_nvenc';
-const crf = 23;
+// const crf = 23;
 const videoFilter = 'yadif';
 
 if (isDualMono) {
@@ -55,7 +55,7 @@ Array.prototype.push.apply(args,[
     '-preset', preset,
     '-aspect', '16:9',
     '-c:v', codec,
-    '-crf', crf,
+    // '-crf', crf,
     '-f', 'mp4',
 
 ]);
