@@ -10,25 +10,13 @@ const output = process.env.OUTPUT;
 
 const isDualMono = parseInt(process.env.AUDIOCOMPONENTTYPE, 10) == 2;
 
-
-const analyzedurationSize = '10M'; // Mirakurun の設定に応じて変更すること
-const probesizeSize = '32M'; // Mirakurun の設定に応じて変更すること
-
 const output_name = path.basename(output, path.extname(output));
 const output_dir = path.dirname(output);
 
 //FFmpegオプション生成 ここから
-const args = [
-    '-y', 
-    '-analyzeduration', analyzedurationSize,
-    '-probesize', probesizeSize,
-    '-hwaccel', 'cuda', 
-    '-hwaccel_output_format', 'cuda',
-    '-hwaccel_device', '0'
-];
+const args = ['-y'];
 const preset = 'slow';
 const codec = 'hevc_nvenc';
-// const crf = 23;
 const videoFilter = 'yadif';
 
 if (isDualMono) {
@@ -51,13 +39,19 @@ Array.prototype.push.apply(args, ['-ignore_unknown']);
 
 // その他設定
 Array.prototype.push.apply(args,[
-    '-vf', videoFilter,
-    '-preset', preset,
-    '-aspect', '16:9',
-    '-c:v', codec,
-    // '-crf', crf,
-    '-f', 'mp4',
-
+  '-vf', videoFilter,
+  '-preset', preset,
+  '-aspect', '16:9',
+  '-c:v', codec,
+  '-profile', 'main10',
+  '-rc', 'vbr_hq',
+  '-weighted_pred', '1',
+  '-b_ref_mode', 'middle',
+  '-rc-lookahead', '32',
+  '-level', '6',
+  '-pix_fmt', 'p010le',
+  '-f', 'mp4',
+  // '-ac', '2',
 ]);
 
 let str = '';
