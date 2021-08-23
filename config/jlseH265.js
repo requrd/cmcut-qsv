@@ -1,15 +1,11 @@
 const spawn = require('child_process').spawn;
 const execFile = require('child_process').execFile;
-const ffmpeg = process.env.FFMPEG;
 const ffprobe = process.env.FFPROBE;
 const path = require('path');
-
 const input = process.env.INPUT;
 const output = process.env.OUTPUT;
 
-
 const isDualMono = parseInt(process.env.AUDIOCOMPONENTTYPE, 10) == 2;
-
 const output_name = path.basename(output, path.extname(output));
 const output_dir = path.dirname(output);
 
