@@ -5,7 +5,6 @@ const input = process.env.INPUT;
 const output = process.env.OUTPUT;
 const analyzedurationSize = '10M'; // Mirakurun の設定に応じて変更すること
 const probesizeSize = '32M'; // Mirakurun の設定に応じて変更すること
-const maxMuxingQueueSize = 1024;
 const dualMonoMode = 'main';
 const videoHeight = parseInt(process.env.VIDEORESOLUTION, 10);
 const isDualMono = parseInt(process.env.AUDIOCOMPONENTTYPE, 10) == 2;
