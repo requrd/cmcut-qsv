@@ -10,10 +10,15 @@ const videoHeight = parseInt(process.env.VIDEORESOLUTION, 10);
 const isDualMono = parseInt(process.env.AUDIOCOMPONENTTYPE, 10) == 2;
 const audioBitrate = videoHeight > 720 ? '192k' : '128k';
 const preset = 'medium';
-const codec = 'h264_hevc';
-const crf = 23;
+const codec = 'h264_qsv';
+const cqp = 23;
 
-const args = ['-y', '-analyzeduration', analyzedurationSize, '-probesize', probesizeSize];
+const args = [
+'-y',
+'hwaccel', 'qsv',
+'-analyzeduration', analyzedurationSize,
+'-probesize', probesizeSize
+];
 
 // dual mono 設定
 if (isDualMono) {
@@ -41,7 +46,7 @@ Array.prototype.push.apply(args,[
     '-preset', preset,
     '-aspect', '16:9',
     '-c:v', codec,
-    '-crf', crf,
+    '-q:v', cqp,
     '-f', 'mp4',
     '-c:a', 'aac',
     '-ar', '48000',
