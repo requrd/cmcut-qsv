@@ -40,16 +40,8 @@ encode:
       cmd: '%NODE% %ROOT%/config/enc.js'
       suffix: .mp4
       rate: 4.0
-    - name: H.265
-      cmd: '%NODE% %ROOT%/config/encH265.js'
-      suffix: .mp4
-      rate: 4.0
     - name: jlse
       cmd: '%NODE% %ROOT%/config/jlse.js'
-      suffix: .mp4
-      rate: 4.0
-    - name: jlse-hevc
-      cmd: '%NODE% %ROOT%/config/jlseH265.js'
       suffix: .mp4
       rate: 4.0
 
