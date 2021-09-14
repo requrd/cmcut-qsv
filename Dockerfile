@@ -50,8 +50,7 @@ RUN set -xe && \
     git clone https://github.com/l3tnun/EPGStation.git -b ${EPGSTATION_VERSION}
 
 FROM requrd/avisynth-plus:latest as release
-ENV        DEBIAN_FRONTEND=noninteractive
-MAINTAINER  Tobitti <mail@tobitti.net>
+ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build /join_logo_scp_trial /join_logo_scp_trial
 COPY --from=build /tmp/EPGStation /app
 
