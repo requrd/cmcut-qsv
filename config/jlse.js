@@ -13,7 +13,7 @@ const output_dir = path.dirname(output);
 
 //FFmpegオプション生成 ここから
 const args = ['-y'];
-const preset = 'medium';
+const preset = 'veryfast';
 const codec = 'libx264'; //libx264でエンコード
 const crf = 23;
 const videoFilter = 'yadif';
