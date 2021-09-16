@@ -20,7 +20,7 @@ epgUpdateIntervalTime: 10
 conflictPriority: 1
 recPriority: 2
 
-recordedFormat: '%YEAR%年%MONTH%月%DAY%日%HOUR%時%MIN%分%SEC%秒-%TITLE%'
+recordedFormat: '%CHNAME%-%YEAR%年%MONTH%月%DAY%日%HOUR%時%MIN%分%SEC%秒-%TITLE%'
 recordedFileExtension: .ts
 recorded:
     - name: recorded
