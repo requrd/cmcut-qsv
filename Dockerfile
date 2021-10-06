@@ -55,9 +55,9 @@ COPY --from=build /join_logo_scp_trial /join_logo_scp_trial
 COPY --from=build /tmp/EPGStation /app
 
 WORKDIR /join_logo_scp_trial
-RUN bash setup_node.x && \
-    apt-get update && \
-    apt-get install --no-install-recommends -y nodejs libboost-filesystem-dev libboost-program-options-dev libboost-system-dev && \
+RUN apt update && apt install -y ca-certificates && \    
+    bash setup_node.x && \
+    apt install --no-install-recommends -y nodejs libboost-filesystem-dev libboost-program-options-dev libboost-system-dev && \
     node -v && \
     npm --version &&\
     mv libdelogo.so /usr/local/lib/avisynth && \
