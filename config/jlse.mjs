@@ -32,6 +32,137 @@ const getJlseProcess = (input) => {
   return spawn("jlse", jlse_args, { env: env });
 };
 
+const udpateProgress = (str, progress) => {
+  if (str.startsWith("AviSynth") && str){
+    //AviSynth+
+    const raw_avisynth_data = str.replace(/AviSynth\s/, "");
+    if (raw_avisynth_data.startsWith("Creating")) {
+      const avisynth_reg = /Creating\slwi\sindex\sfile\s(\d+)%/;
+      progress.total_num = 200;
+      progress.now_num = Number(raw_avisynth_data.match(avisynth_reg)[1]);
+      progress.now_num += progress.avisynth_flag ? 100 : 0;
+      progress.avisynth_flag = progress.avisynth_flag
+        ? true
+        : progress.now_num == 100
+        ? true
+        : false;
+    }
+    progress.update_log_flag = true;
+    progress.log = `(1/4) AviSynth:Creating lwi index files`;
+    return progress;
+  }
+
+  if(str.startsWith("chapter_exe") && str){
+    //chapter_exe
+    const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
+    switch (raw_chapter_exe_data) {
+      case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
+        raw_chapter_exe_data: {
+        //chapter_exeでの総フレーム数取得
+        const movie_frame_reg =
+          /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
+        total_num = Number(
+          raw_chapter_exe_data.match(movie_frame_reg)[1]
+        );
+        update_log_flag = true;
+        break;
+      }
+      case raw_chapter_exe_data.startsWith("mute") &&
+        raw_chapter_exe_data: {
+        //現在のフレーム数取得
+        const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
+        now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
+        update_log_flag = true;
+        break;
+      }
+      case raw_chapter_exe_data.startsWith("end") &&
+        raw_chapter_exe_data: {
+        //chapter_exeの終了検知
+        now_num = total_num;
+        update_log_flag = true;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    progress.log = `(2/4) Chapter_exe: ${now_num}/${total_num}`;
+    return progress;
+  }
+
+  if (str.startsWith("logoframe") && str){
+    //logoframe
+    const raw_logoframe_data = str.replace(/logoframe\s/, "");
+    switch (raw_logoframe_data) {
+      case raw_logoframe_data.startsWith("checking") &&
+        raw_logoframe_data: {
+        const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
+        const logoframe = raw_logoframe_data.match(logoframe_reg);
+        now_num = Number(logoframe[1]);
+        total_num = Number(logoframe[2]);
+        update_log_flag = true;
+      }
+      default: {
+        break;
+      }
+    }
+    progress.log = `(3/4) logoframe: ${now_num}/${total_num}`;
+    return progress;
+  }
+
+  if (str.startsWith("frame") && str){
+    //FFmpeg
+    // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
+    const progress = {};
+    let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
+    if (tmp === null) continue;
+    for (let j = 0; j < tmp.length; j++) {
+      progress[tmp[j].split("=")[0]] = tmp[j]
+        .split("=")[1]
+        .replace(/\r/g, "")
+        .trim();
+    }
+    progress["frame"] = parseInt(progress["frame"]);
+    progress["fps"] = parseFloat(progress["fps"]);
+    progress["q"] = parseFloat(progress["q"]);
+
+    let current = 0;
+    const times = progress.time.split(":");
+    for (let i = 0; i < times.length; i++) {
+      if (i == 0) {
+        current += parseFloat(times[i]) * 3600;
+      } else if (i == 1) {
+        current += parseFloat(times[i]) * 60;
+      } else if (i == 2) {
+        current += parseFloat(times[i]);
+      }
+    }
+
+    // 進捗率 1.0 で 100%
+    now_num = current;
+    total_num = duration;
+    log =
+      "(4/4) FFmpeg: " +
+      //'frame= ' +
+      //progress.frame +
+      //' fps=' +
+      //progress.fps +
+      //' size=' +
+      //progress.size +
+      " time=" +
+      progress.time +
+      //' bitrate=' +
+      //progress.bitrate +
+      " speed=" +
+      progress.speed;
+    update_log_flag = true;
+    return progress;
+  }
+  //進捗表示に必要ない出力データを流す
+  console.log(str);
+  return progress
+};
+
 //メインの処理 ここから
 (async () => {
   const input = process.env.INPUT;
@@ -39,12 +170,14 @@ const getJlseProcess = (input) => {
   const duration = await getDuration(input);
 
   //必要な変数
-  let total_num = 0;
-  let now_num = 0;
-  let avisynth_flag = false;
-  let percent = 0;
-  let update_log_flag = false;
-  let log = "";
+  let progress = {
+    total_num: 0,
+    now_num: 0,
+    avisynth_flag: false,
+    percent: 0,
+    update_log_flag: false,
+    log: ""
+  }
   const child = getJlseProcess(input);
   /**
    * エンコード進捗表示用に標準出力に進捗情報を吐き出す
@@ -54,146 +187,15 @@ const getJlseProcess = (input) => {
   child.stderr.on("data", (data) => {
     const lines = String(data).split("\n");
     console.error(`エンコード開始！: ${lines}`);
+
     for (const str of lines) {
-      switch (str) {
-        case str.startsWith("AviSynth") && str: {
-          //AviSynth+
-          const raw_avisynth_data = str.replace(/AviSynth\s/, "");
-          if (raw_avisynth_data.startsWith("Creating")) {
-            const avisynth_reg = /Creating\slwi\sindex\sfile\s(\d+)%/;
-            total_num = 200;
-            now_num = Number(raw_avisynth_data.match(avisynth_reg)[1]);
-            now_num += avisynth_flag ? 100 : 0;
-            avisynth_flag = avisynth_flag
-              ? true
-              : now_num == 100
-              ? true
-              : false;
-          }
-          update_log_flag = true;
-          log = `(1/4) AviSynth:Creating lwi index files`;
-          break;
-        }
-
-        case str.startsWith("chapter_exe") && str: {
-          //chapter_exe
-          const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
-          switch (raw_chapter_exe_data) {
-            case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
-              raw_chapter_exe_data: {
-              //chapter_exeでの総フレーム数取得
-              const movie_frame_reg =
-                /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
-              total_num = Number(
-                raw_chapter_exe_data.match(movie_frame_reg)[1]
-              );
-              update_log_flag = true;
-              break;
-            }
-            case raw_chapter_exe_data.startsWith("mute") &&
-              raw_chapter_exe_data: {
-              //現在のフレーム数取得
-              const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
-              now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-              update_log_flag = true;
-              break;
-            }
-            case raw_chapter_exe_data.startsWith("end") &&
-              raw_chapter_exe_data: {
-              //chapter_exeの終了検知
-              now_num = total_num;
-              update_log_flag = true;
-              break;
-            }
-            default: {
-              break;
-            }
-          }
-          log = `(2/4) Chapter_exe: ${now_num}/${total_num}`;
-          break;
-        }
-
-        case str.startsWith("logoframe") && str: {
-          //logoframe
-          const raw_logoframe_data = str.replace(/logoframe\s/, "");
-          switch (raw_logoframe_data) {
-            case raw_logoframe_data.startsWith("checking") &&
-              raw_logoframe_data: {
-              const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
-              const logoframe = raw_logoframe_data.match(logoframe_reg);
-              now_num = Number(logoframe[1]);
-              total_num = Number(logoframe[2]);
-              update_log_flag = true;
-            }
-            default: {
-              break;
-            }
-          }
-          log = `(3/4) logoframe: ${now_num}/${total_num}`;
-          break;
-        }
-
-        case str.startsWith("frame") && str: {
-          //FFmpeg
-          // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
-          const progress = {};
-          let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
-          if (tmp === null) continue;
-          for (let j = 0; j < tmp.length; j++) {
-            progress[tmp[j].split("=")[0]] = tmp[j]
-              .split("=")[1]
-              .replace(/\r/g, "")
-              .trim();
-          }
-          progress["frame"] = parseInt(progress["frame"]);
-          progress["fps"] = parseFloat(progress["fps"]);
-          progress["q"] = parseFloat(progress["q"]);
-
-          let current = 0;
-          const times = progress.time.split(":");
-          for (let i = 0; i < times.length; i++) {
-            if (i == 0) {
-              current += parseFloat(times[i]) * 3600;
-            } else if (i == 1) {
-              current += parseFloat(times[i]) * 60;
-            } else if (i == 2) {
-              current += parseFloat(times[i]);
-            }
-          }
-
-          // 進捗率 1.0 で 100%
-          now_num = current;
-          total_num = duration;
-          log =
-            "(4/4) FFmpeg: " +
-            //'frame= ' +
-            //progress.frame +
-            //' fps=' +
-            //progress.fps +
-            //' size=' +
-            //progress.size +
-            " time=" +
-            progress.time +
-            //' bitrate=' +
-            //progress.bitrate +
-            " speed=" +
-            progress.speed;
-          update_log_flag = true;
-          break;
-        }
-
-        default: {
-          //進捗表示に必要ない出力データを流す
-          console.log(str);
-          break;
-        }
-      }
-      percent = now_num / total_num;
-      if (update_log_flag)
+      progress = udpateProgress(str, progress)
+      progress.percent = progress.now_num / progress.total_num;
+      if (progress.update_log_flag)
         console.log(
-          JSON.stringify({ type: "progress", percent: percent, log: log })
+          JSON.stringify({ type: "progress", percent: progress.percent, log: progress.log })
         );
-      update_log_flag = false;
+      progress.update_log_flag = false;
     }
   });
 
