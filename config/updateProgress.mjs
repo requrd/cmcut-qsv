@@ -142,6 +142,12 @@ const applyUdpate = (str, progress) => {
   return progress;
 };
 
+/**
+ * ログ行を解析し、進捗が更新された場合に標準する
+ * @param {string} line - ログ行
+ * @param {Object} progress - 直前までの進捗
+ * @returns Object - 更新済みの進捗
+ */
 const updateProgress = (line, progress) => {
   progress = applyUdpate(line, progress);
   progress.percent = progress.now_num / progress.total_num;
