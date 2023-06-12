@@ -22,10 +22,10 @@ const getJlseArgs = (input, output) => [
 /**
  * JLSEを実行中のサブプロセスを取得する
  * @param {string} input - 入力ファイルのパス
+ * @param {string} output - 出力ファイルのパス
  * @returns JLSEのサブプロセス
  */
-const getJlseProcess = (input) => {
-  const output = process.env.OUTPUT;
+const getJlseProcess = (input, output) => {
   const jlse_args = getJlseArgs(input, output);
   // console.error(`jlse args: ${jlse_args}`);
   const env = Object.create(process.env);
@@ -37,7 +37,7 @@ const getJlseProcess = (input) => {
 //メインの処理 ここから
 (async () => {
   const input = process.env.INPUT;
-  //必要な変数
+  //進捗管理用オブジェクト
   let progress = {
     total_num: 0,
     now_num: 0,
@@ -48,7 +48,7 @@ const getJlseProcess = (input) => {
     // 進捗計算のために動画の長さを取得
     duration: await getDuration(input),
   };
-  const child = getJlseProcess(input);
+  const child = getJlseProcess(input, process.env.OUTPUT);
   /**
    * エンコード進捗表示用に標準出力に進捗情報を吐き出す
    * 出力する JSON
