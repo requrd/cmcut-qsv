@@ -61,25 +61,25 @@ const udpateProgress = (str, progress) => {
         //chapter_exeでの総フレーム数取得
         const movie_frame_reg =
           /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
-        total_num = Number(
+        progress.total_num = Number(
           raw_chapter_exe_data.match(movie_frame_reg)[1]
         );
-        update_log_flag = true;
+        progress.update_log_flag = true;
         break;
       }
       case raw_chapter_exe_data.startsWith("mute") &&
         raw_chapter_exe_data: {
         //現在のフレーム数取得
         const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
-        now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-        update_log_flag = true;
+        progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
+        progress.update_log_flag = true;
         break;
       }
       case raw_chapter_exe_data.startsWith("end") &&
         raw_chapter_exe_data: {
         //chapter_exeの終了検知
-        now_num = total_num;
-        update_log_flag = true;
+        progress.now_num = total_num;
+        progress.update_log_flag = true;
         break;
       }
       default: {
