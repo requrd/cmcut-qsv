@@ -1,0 +1,26 @@
+{
+  "name": "cmcut-qsv",
+  "version": "1.0.0",
+  "description": "CMカットを自動で実施するEpgstationをDocker Imageとして管理   ref. https://tobitti.net/blog/Ubuntu-EPGStation_v2-JoinLogoScpTrial/   jlseが拡張子`.ts`のみに対応していたため、録画時のファイルの拡張子を`.m2ts`から`.ts`に修正してある。   QSV用にベースイメージを差し替え済み",
+  "main": "index.js",
+  "dependencies": {
+    "prettier": "^2.8.8"
+  },
+  "devDependencies": {
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/requrd/cmcut-qsv.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/requrd/cmcut-qsv/issues"
+  },
+  "homepage": "https://github.com/requrd/cmcut-qsv#readme"
+}
