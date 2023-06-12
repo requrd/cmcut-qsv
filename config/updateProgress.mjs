@@ -71,6 +71,19 @@ const udpateToAviSynth = (str, progress) => {
   return progress;
 };
 
+const updateToLogoFrame = (str, progress) => {
+  const raw_logoframe_data = str.replace(/logoframe\s/, "");
+  if (raw_logoframe_data.startsWith("checking") && raw_logoframe_data) {
+    const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
+    const logoframe = raw_logoframe_data.match(logoframe_reg);
+    progress.now_num = Number(logoframe[1]);
+    progress.total_num = Number(logoframe[2]);
+    progress.update_log_flag = true;
+  }
+  progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
+  return progress;
+};
+
 const udpateProgress = (str, progress) => {
   if (str.startsWith("AviSynth") && str) {
     //AviSynth+
@@ -114,21 +127,7 @@ const udpateProgress = (str, progress) => {
 
   if (str.startsWith("logoframe") && str) {
     //logoframe
-    const raw_logoframe_data = str.replace(/logoframe\s/, "");
-    switch (raw_logoframe_data) {
-      case raw_logoframe_data.startsWith("checking") && raw_logoframe_data: {
-        const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
-        const logoframe = raw_logoframe_data.match(logoframe_reg);
-        progress.now_num = Number(logoframe[1]);
-        progress.total_num = Number(logoframe[2]);
-        progress.update_log_flag = true;
-      }
-      default: {
-        break;
-      }
-    }
-    progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
-    return progress;
+    return updateToLogoFrame(str, progress);
   }
 
   if (str.startsWith("frame") && str) {
