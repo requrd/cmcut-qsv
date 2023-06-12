@@ -34,7 +34,7 @@ const updateToFfmpeg = (str, state) => {
 
   // 進捗率 1.0 で 100%
   state.now_num = current;
-  state.total_num = duration;
+  state.total_num = state.duration;
   state.log =
     "(4/4) FFmpeg: " +
     //'frame= ' +

@@ -36,9 +36,6 @@ const getJlseProcess = (input) => {
 //メインの処理 ここから
 (async () => {
   const input = process.env.INPUT;
-  // 進捗計算のために動画の長さを取得
-  const duration = await getDuration(input);
-
   //必要な変数
   let progress = {
     total_num: 0,
@@ -47,6 +44,8 @@ const getJlseProcess = (input) => {
     percent: 0,
     log_updated: false,
     log: "",
+    // 進捗計算のために動画の長さを取得
+    duration: await getDuration(input),
   };
   const child = getJlseProcess(input);
   /**
