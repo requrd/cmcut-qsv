@@ -98,15 +98,15 @@ const udpateProgress = (str, progress) => {
         raw_logoframe_data: {
         const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
         const logoframe = raw_logoframe_data.match(logoframe_reg);
-        now_num = Number(logoframe[1]);
-        total_num = Number(logoframe[2]);
-        update_log_flag = true;
+        progress.now_num = Number(logoframe[1]);
+        progress.total_num = Number(logoframe[2]);
+        progress.update_log_flag = true;
       }
       default: {
         break;
       }
     }
-    progress.log = `(3/4) logoframe: ${now_num}/${total_num}`;
+    progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
     return progress;
   }
 
