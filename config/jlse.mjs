@@ -12,13 +12,12 @@ import { getFfmpegOptions } from "./getFfmpegOptions.mjs";
  */
 const getJlseProcess = (input) => {
   const output = process.env.OUTPUT;
-  const str = getFfmpegOptions().reduce((prev, curr) => prev + " " + curr);
   const jlse_args = [
     "-i",
     input,
     "-e",
     "-o",
-    str,
+    getFfmpegOptions().reduce((prev, curr) => prev + " " + curr),
     "-r",
     "-d",
     dirname(output),
