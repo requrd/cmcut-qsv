@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import { basename, extname, dirname } from "path";
 import { getDuration } from "./getDuration.mjs";
 import { getFfmpegOptions } from "./getFfmpegOptions.mjs";
-import { udpateProgress } from "./updateProgress.mjs";
+import { updateProgress } from "./updateProgress.mjs";
 
 // const ffmpeg = process.env.FFMPEG;
 
@@ -56,20 +56,8 @@ const getJlseProcess = (input) => {
    */
   child.stderr.on("data", (data) => {
     const lines = String(data).split("\n");
-    console.error(`エンコード開始！: ${lines}`);
-
     for (const line of lines) {
-      progress = udpateProgress(line, progress);
-      progress.percent = progress.now_num / progress.total_num;
-      if (progress.log_updated)
-        console.log(
-          JSON.stringify({
-            type: "progress",
-            percent: progress.percent,
-            log: progress.log,
-          })
-        );
-      progress.log_updated = false;
+      progress = updateProgress(line, progress);
     }
   });
 

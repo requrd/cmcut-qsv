@@ -118,7 +118,7 @@ const updateToChapter = (str, progress) => {
   return progress;
 };
 
-const udpateProgress = (str, progress) => {
+const applyUdpate = (str, progress) => {
   if (str.startsWith("AviSynth") && str) {
     //AviSynth+
     return udpateToAviSynth(str, progress);
@@ -141,4 +141,20 @@ const udpateProgress = (str, progress) => {
   console.log(str);
   return progress;
 };
-export { udpateProgress };
+
+const updateProgress = (line, progress) => {
+  progress = applyUdpate(line, progress);
+  progress.percent = progress.now_num / progress.total_num;
+  if (progress.log_updated) {
+    console.log(
+      JSON.stringify({
+        type: "progress",
+        percent: progress.percent,
+        log: progress.log,
+      })
+    );
+    progress.log_updated = false;
+  }
+  return progress;
+};
+export { updateProgress };
