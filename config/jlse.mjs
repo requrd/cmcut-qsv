@@ -6,6 +6,19 @@ import { updateProgress } from "./updateProgress.mjs";
 
 // const ffmpeg = process.env.FFMPEG;
 
+const getJlseArgs = (input, output) => [
+  "-i",
+  input,
+  "-e",
+  "-o",
+  getFfmpegOptions().reduce((prev, curr) => prev + " " + curr),
+  "-r",
+  "-d",
+  dirname(output),
+  "-n",
+  basename(output, extname(output)),
+];
+
 /**
  * JLSEを実行中のサブプロセスを取得する
  * @param {string} input - 入力ファイルのパス
@@ -13,23 +26,11 @@ import { updateProgress } from "./updateProgress.mjs";
  */
 const getJlseProcess = (input) => {
   const output = process.env.OUTPUT;
-  const jlse_args = [
-    "-i",
-    input,
-    "-e",
-    "-o",
-    getFfmpegOptions().reduce((prev, curr) => prev + " " + curr),
-    "-r",
-    "-d",
-    dirname(output),
-    "-n",
-    basename(output, extname(output)),
-  ];
-  console.error(`jlse args: ${jlse_args}`);
-
+  const jlse_args = getJlseArgs(input, output);
+  // console.error(`jlse args: ${jlse_args}`);
   const env = Object.create(process.env);
   env.HOME = "/root";
-  console.error(`env: ${JSON.stringify(env)}`);
+  // console.error(`env: ${JSON.stringify(env)}`);
   return spawn("jlse", jlse_args, { env: env });
 };
 
