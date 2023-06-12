@@ -49,7 +49,7 @@ const updateToFfmpeg = (str, state) => {
     //progress.bitrate +
     " speed=" +
     progress.speed;
-  state.update_log_flag = true;
+  state.log_updated = true;
   return state;
 };
 
@@ -66,7 +66,7 @@ const udpateToAviSynth = (str, progress) => {
       ? true
       : false;
   }
-  progress.update_log_flag = true;
+  progress.log_updated = true;
   progress.log = `(1/4) AviSynth:Creating lwi index files`;
   return progress;
 };
@@ -78,7 +78,7 @@ const updateToLogoFrame = (str, progress) => {
     const logoframe = raw_logoframe_data.match(logoframe_reg);
     progress.now_num = Number(logoframe[1]);
     progress.total_num = Number(logoframe[2]);
-    progress.update_log_flag = true;
+    progress.log_updated = true;
   }
   progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
   return progress;
@@ -94,20 +94,20 @@ const updateToChapter = (str, progress) => {
       progress.total_num = Number(
         raw_chapter_exe_data.match(movie_frame_reg)[1]
       );
-      progress.update_log_flag = true;
+      progress.log_updated = true;
       break;
     }
     case raw_chapter_exe_data.startsWith("mute") && raw_chapter_exe_data: {
       //現在のフレーム数取得
       const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
       progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-      progress.update_log_flag = true;
+      progress.log_updated = true;
       break;
     }
     case raw_chapter_exe_data.startsWith("end") && raw_chapter_exe_data: {
       //chapter_exeの終了検知
       progress.now_num = progress.total_num;
-      progress.update_log_flag = true;
+      progress.log_updated = true;
       break;
     }
     default: {
