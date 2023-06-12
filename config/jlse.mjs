@@ -52,10 +52,9 @@ const getJlseProcess = (input) => {
    * {"type":"progress","percent": 0.8, "log": "view log" }
    */
   child.stderr.on("data", (data) => {
-    let strbyline = String(data).split("\n");
-    console.error(`エンコード開始！: ${strbyline}`);
-    for (let i = 0; i < strbyline.length; i++) {
-      let str = strbyline[i];
+    const lines = String(data).split("\n");
+    console.error(`エンコード開始！: ${lines}`);
+    for (const str of lines) {
       switch (str) {
         case str.startsWith("AviSynth") && str: {
           //AviSynth+
@@ -185,7 +184,7 @@ const getJlseProcess = (input) => {
 
         default: {
           //進捗表示に必要ない出力データを流す
-          console.log(strbyline[i]);
+          console.log(str);
           break;
         }
       }
