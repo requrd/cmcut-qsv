@@ -45,7 +45,7 @@ const getJlseProcess = (input) => {
     now_num: 0,
     avisynth_flag: false,
     percent: 0,
-    update_log_flag: false,
+    log_updated: false,
     log: "",
   };
   const child = getJlseProcess(input);
@@ -61,7 +61,7 @@ const getJlseProcess = (input) => {
     for (const str of lines) {
       progress = udpateProgress(str, progress);
       progress.percent = progress.now_num / progress.total_num;
-      if (progress.update_log_flag)
+      if (progress.log_updated)
         console.log(
           JSON.stringify({
             type: "progress",
@@ -69,7 +69,7 @@ const getJlseProcess = (input) => {
             log: progress.log,
           })
         );
-      progress.update_log_flag = false;
+      progress.log_updated = false;
     }
   });
 
