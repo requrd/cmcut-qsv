@@ -39,53 +39,52 @@ const getJlseProcess = (input) => {
  * @returns state
  */
 const updateToFfmpeg = (str, state) => {
-    //FFmpeg
-    // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
-    const progress = {};
-    let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
-    if (tmp === null) continue;
-    for (let j = 0; j < tmp.length; j++) {
-      progress[tmp[j].split("=")[0]] = tmp[j]
-        .split("=")[1]
-        .replace(/\r/g, "")
-        .trim();
+  //FFmpeg
+  // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
+  const progress = {};
+  let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
+  if (tmp === null) continue;
+  for (let j = 0; j < tmp.length; j++) {
+    progress[tmp[j].split("=")[0]] = tmp[j]
+      .split("=")[1]
+      .replace(/\r/g, "")
+      .trim();
+  }
+  progress["frame"] = parseInt(progress["frame"]);
+  progress["fps"] = parseFloat(progress["fps"]);
+  progress["q"] = parseFloat(progress["q"]);
+
+  let current = 0;
+  const times = progress.time.split(":");
+  for (let i = 0; i < times.length; i++) {
+    if (i == 0) {
+      current += parseFloat(times[i]) * 3600;
+    } else if (i == 1) {
+      current += parseFloat(times[i]) * 60;
+    } else if (i == 2) {
+      current += parseFloat(times[i]);
     }
-    progress["frame"] = parseInt(progress["frame"]);
-    progress["fps"] = parseFloat(progress["fps"]);
-    progress["q"] = parseFloat(progress["q"]);
+  }
 
-    let current = 0;
-    const times = progress.time.split(":");
-    for (let i = 0; i < times.length; i++) {
-      if (i == 0) {
-        current += parseFloat(times[i]) * 3600;
-      } else if (i == 1) {
-        current += parseFloat(times[i]) * 60;
-      } else if (i == 2) {
-        current += parseFloat(times[i]);
-      }
-    }
-
-    // 進捗率 1.0 で 100%
-    state.now_num = current;
-    state.total_num = duration;
-    state.log =
-      "(4/4) FFmpeg: " +
-      //'frame= ' +
-      //progress.frame +
-      //' fps=' +
-      //progress.fps +
-      //' size=' +
-      //progress.size +
-      " time=" +
-      progress.time +
-      //' bitrate=' +
-      //progress.bitrate +
-      " speed=" +
-      progress.speed;
-    state.update_log_flag = true;
-    return state;
-
+  // 進捗率 1.0 で 100%
+  state.now_num = current;
+  state.total_num = duration;
+  state.log =
+    "(4/4) FFmpeg: " +
+    //'frame= ' +
+    //progress.frame +
+    //' fps=' +
+    //progress.fps +
+    //' size=' +
+    //progress.size +
+    " time=" +
+    progress.time +
+    //' bitrate=' +
+    //progress.bitrate +
+    " speed=" +
+    progress.speed;
+  state.update_log_flag = true;
+  return state;
 };
 
 const udpateProgress = (str, progress) => {
