@@ -58,8 +58,8 @@ const getJlseProcess = (input) => {
     const lines = String(data).split("\n");
     console.error(`エンコード開始！: ${lines}`);
 
-    for (const str of lines) {
-      progress = udpateProgress(str, progress);
+    for (const line of lines) {
+      progress = udpateProgress(line, progress);
       progress.percent = progress.now_num / progress.total_num;
       if (progress.log_updated)
         console.log(
