@@ -143,7 +143,7 @@ const applyUdpate = (str, progress) => {
 };
 
 /**
- * ログ行を解析し、進捗が更新された場合に標準する
+ * jlse実行中のログ行を解析し、進捗が更新された場合に標準する
  * @param {string} line - ログ行
  * @param {Object} progress - 直前までの進捗
  * @returns Object - 更新済みの進捗
