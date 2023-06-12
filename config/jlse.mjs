@@ -4,13 +4,38 @@ import { getDuration } from "./getDuration.mjs";
 import { getFfmpegOptions } from "./getFfmpegOptions.mjs";
 
 // const ffmpeg = process.env.FFMPEG;
-const input = process.env.INPUT;
-const output = process.env.OUTPUT;
-const output_name = basename(output, extname(output));
-const output_dir = dirname(output);
+
+/**
+ * JLSEを実行中のサブプロセスを取得する
+ * @param {string} input - 入力ファイルのパス
+ * @returns JLSEのサブプロセス
+ */
+const getJlseProcess = (input) => {
+  const output = process.env.OUTPUT;
+  const str = getFfmpegOptions().reduce((prev, curr) => prev + " " + curr);
+  const jlse_args = [
+    "-i",
+    input,
+    "-e",
+    "-o",
+    str,
+    "-r",
+    "-d",
+    dirname(output),
+    "-n",
+    basename(output, extname(output)),
+  ];
+  console.error(`jlse args: ${jlse_args}`);
+
+  const env = Object.create(process.env);
+  env.HOME = "/root";
+  console.error(`env: ${JSON.stringify(env)}`);
+  return spawn("jlse", jlse_args, { env: env });
+};
 
 //メインの処理 ここから
 (async () => {
+  const input = process.env.INPUT;
   // 進捗計算のために動画の長さを取得
   const duration = await getDuration(input);
 
@@ -21,27 +46,7 @@ const output_dir = dirname(output);
   let percent = 0;
   let update_log_flag = false;
   let log = "";
-  const str = getFfmpegOptions().reduce((prev, curr) => prev + " " + curr);
-
-  const jlse_args = [
-    "-i",
-    input,
-    "-e",
-    "-o",
-    str,
-    "-r",
-    "-d",
-    output_dir,
-    "-n",
-    output_name,
-  ];
-  console.error(`jlse args: ${jlse_args}`);
-
-  const env = Object.create(process.env);
-  env.HOME = "/root";
-  console.error(`env: ${JSON.stringify(env)}`);
-  const child = spawn("jlse", jlse_args, { env: env });
-
+  const child = getJlseProcess(input);
   /**
    * エンコード進捗表示用に標準出力に進捗情報を吐き出す
    * 出力する JSON
