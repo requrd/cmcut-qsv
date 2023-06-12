@@ -84,6 +84,40 @@ const updateToLogoFrame = (str, progress) => {
   return progress;
 };
 
+const updateToChapter = (str, progress) => {
+  const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
+  switch (raw_chapter_exe_data) {
+    case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
+      raw_chapter_exe_data: {
+      //chapter_exeでの総フレーム数取得
+      const movie_frame_reg = /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
+      progress.total_num = Number(
+        raw_chapter_exe_data.match(movie_frame_reg)[1]
+      );
+      progress.update_log_flag = true;
+      break;
+    }
+    case raw_chapter_exe_data.startsWith("mute") && raw_chapter_exe_data: {
+      //現在のフレーム数取得
+      const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
+      progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
+      progress.update_log_flag = true;
+      break;
+    }
+    case raw_chapter_exe_data.startsWith("end") && raw_chapter_exe_data: {
+      //chapter_exeの終了検知
+      progress.now_num = progress.total_num;
+      progress.update_log_flag = true;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+  progress.log = `(2/4) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
+  return progress;
+};
+
 const udpateProgress = (str, progress) => {
   if (str.startsWith("AviSynth") && str) {
     //AviSynth+
@@ -92,37 +126,7 @@ const udpateProgress = (str, progress) => {
 
   if (str.startsWith("chapter_exe") && str) {
     //chapter_exe
-    const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
-    switch (raw_chapter_exe_data) {
-      case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
-        raw_chapter_exe_data: {
-        //chapter_exeでの総フレーム数取得
-        const movie_frame_reg = /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
-        progress.total_num = Number(
-          raw_chapter_exe_data.match(movie_frame_reg)[1]
-        );
-        progress.update_log_flag = true;
-        break;
-      }
-      case raw_chapter_exe_data.startsWith("mute") && raw_chapter_exe_data: {
-        //現在のフレーム数取得
-        const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
-        progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-        progress.update_log_flag = true;
-        break;
-      }
-      case raw_chapter_exe_data.startsWith("end") && raw_chapter_exe_data: {
-        //chapter_exeの終了検知
-        progress.now_num = progress.total_num;
-        progress.update_log_flag = true;
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-    progress.log = `(2/4) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
-    return progress;
+    return updateToChapter(str, progress);
   }
 
   if (str.startsWith("logoframe") && str) {
