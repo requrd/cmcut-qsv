@@ -11,7 +11,7 @@ const getJlseArgs = (input, output) => [
   input,
   "-e",
   "-o",
-  getFfmpegOptions().reduce((prev, curr) => prev + " " + curr),
+  " " + getFfmpegOptions().reduce((prev, curr) => prev + " " + curr),
   "-r",
   "-d",
   dirname(output),
