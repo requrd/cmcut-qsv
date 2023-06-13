@@ -1,4 +1,4 @@
-import { execFile } from "prettier";
+import { execFile } from "child_process";
 const ffprobe = process.env.FFPROBE;
 /**
  * 動画長取得関数
