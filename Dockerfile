@@ -76,6 +76,7 @@ RUN cd /app && \
 WORKDIR /app
 COPY config /app/config
 COPY logos /join_logo_scp_trial/logo
+COPY settings /app/settings
 RUN tail -n +2 /app/settings/JLparam_set2.csv >> /join_logo_scp_trial/setting/JLparam_set2.csv
 ENTRYPOINT ["npm"]
 CMD ["start"]
