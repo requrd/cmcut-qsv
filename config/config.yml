@@ -37,7 +37,7 @@ encodeProcessNum: 4
 concurrentEncodeNum: 1
 encode:
   - name: H.264
-    cmd: "%NODE% %ROOT%/config/enc.js"
+    cmd: "%NODE% %ROOT%/config/enc.mjs"
     suffix: .mp4
     rate: 4.0
   - name: H.264_QSV
