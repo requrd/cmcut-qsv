@@ -26,12 +26,10 @@ const getJlseArgs = (input, output) => [
  * @returns JLSEのサブプロセス
  */
 const getJlseProcess = (input, output) => {
-  const jlse_args = getJlseArgs(input, output);
-  // console.error(`jlse args: ${jlse_args}`);
   const env = Object.create(process.env);
   env.HOME = "/root";
   // console.error(`env: ${JSON.stringify(env)}`);
-  return spawn("jlse", jlse_args, { env: env });
+  return spawn("jlse", getJlseArgs(input, output), { env: env });
 };
 
 //メインの処理 ここから
