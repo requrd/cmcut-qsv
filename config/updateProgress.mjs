@@ -60,33 +60,21 @@ const updateToLogoFrame = (line, progress) => {
 
 const updateToChapter = (line, progress) => {
   const raw_chapter_exe_data = line.replace(/chapter_exe\s/, "");
-  switch (raw_chapter_exe_data) {
-    case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
-      raw_chapter_exe_data: {
-      //chapter_exeでの総フレーム数取得
-      const movie_frame_reg = /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
-      progress.total_num = Number(
-        raw_chapter_exe_data.match(movie_frame_reg)[1]
-      );
-      progress.log_updated = true;
-      break;
-    }
-    case raw_chapter_exe_data.startsWith("mute") && raw_chapter_exe_data: {
-      //現在のフレーム数取得
-      const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
-      progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-      progress.log_updated = true;
-      break;
-    }
-    case raw_chapter_exe_data.startsWith("end") && raw_chapter_exe_data: {
-      //chapter_exeの終了検知
-      progress.now_num = progress.total_num;
-      progress.log_updated = true;
-      break;
-    }
-    default: {
-      break;
-    }
+  if (raw_chapter_exe_data.startsWith("\tVideo Frames")) {
+    progress.total_num = Number(
+      raw_chapter_exe_data.match(/\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/)[1]
+    );
+    progress.log_updated = true;
+  }
+  if (raw_chapter_exe_data.startsWith("mute")) {
+    progress.now_num = Number(
+      raw_chapter_exe_data.match(/mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/)[1]
+    );
+    progress.log_updated = true;
+  }
+  if (raw_chapter_exe_data.startsWith("end")) {
+    progress.now_num = progress.total_num;
+    progress.log_updated = true;
   }
   progress.log = `(${progress.step}/${progress.steps}) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
   return progress;
