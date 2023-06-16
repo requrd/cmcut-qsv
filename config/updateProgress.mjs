@@ -1,17 +1,15 @@
 /**
  * 取得したログから状態を更新する
- * @param {string} str
+ * @param {string} line -  e.g." frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x"
  * @param {Object} state
  * @returns state
  */
-const updateToFfmpeg = (str, state) => {
-  //FFmpeg
-  // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
+const updateToFfmpeg = (line, state) => {
   const progress = {};
-  let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
+  const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
   // if (tmp === null) continue;
-  for (let j = 0; j < tmp.length; j++) {
-    progress[tmp[j].split("=")[0]] = tmp[j]
+  for (const field of fields) {
+    progress[field.split("=")[0]] = field
       .split("=")[1]
       .replace(/\r/g, "")
       .trim();
@@ -20,23 +18,13 @@ const updateToFfmpeg = (str, state) => {
   progress["fps"] = parseFloat(progress["fps"]);
   progress["q"] = parseFloat(progress["q"]);
 
-  let current = 0;
-  const times = progress.time.split(":");
-  for (let i = 0; i < times.length; i++) {
-    if (i == 0) {
-      current += parseFloat(times[i]) * 3600;
-    } else if (i == 1) {
-      current += parseFloat(times[i]) * 60;
-    } else if (i == 2) {
-      current += parseFloat(times[i]);
-    }
-  }
-
   // 進捗率 1.0 で 100%
-  state.now_num = current;
+  state.now_num = progress.time
+    .split(":")
+    .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
   state.total_num = state.duration;
   state.log =
-    "(4/4) FFmpeg: " +
+    `(${progress.step}/${progress.steps}) FFmpeg: ` +
     //'frame= ' +
     //progress.frame +
     //' fps=' +
@@ -67,7 +55,7 @@ const udpateToAviSynth = (str, progress) => {
       : false;
   }
   progress.log_updated = true;
-  progress.log = `(1/4) AviSynth:Creating lwi index files`;
+  progress.log = `(${progress.step}/${progress.steps}) AviSynth:Creating lwi index files`;
   return progress;
 };
 
@@ -80,7 +68,7 @@ const updateToLogoFrame = (str, progress) => {
     progress.total_num = Number(logoframe[2]);
     progress.log_updated = true;
   }
-  progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
+  progress.log = `(${progress.step}/${progress.steps}) logoframe: ${progress.now_num}/${progress.total_num}`;
   return progress;
 };
 
@@ -114,27 +102,32 @@ const updateToChapter = (str, progress) => {
       break;
     }
   }
-  progress.log = `(2/4) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
+  progress.log = `(${progress.step}/${progress.steps}) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
   return progress;
 };
 
 const applyUdpate = (str, progress) => {
+  progress.steps = 4;
   if (str.startsWith("AviSynth") && str) {
     //AviSynth+
+    progress.step = 1;
     return udpateToAviSynth(str, progress);
   }
 
   if (str.startsWith("chapter_exe") && str) {
     //chapter_exe
+    progress.step = 2;
     return updateToChapter(str, progress);
   }
 
   if (str.startsWith("logoframe") && str) {
     //logoframe
+    progress.step = 3;
     return updateToLogoFrame(str, progress);
   }
 
   if (str.startsWith("frame") && str) {
+    progress.step = 4;
     return updateToFfmpeg(str, progress);
   }
   //進捗表示に必要ない出力データを流す
