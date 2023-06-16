@@ -1,52 +1,39 @@
 /**
  * 取得したログから状態を更新する
  * @param {string} line -  e.g." frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x"
- * @param {Object} state
- * @returns state
+ * @param {Object} progress
+ * @returns progress - 更新済みのprogress
  */
-const updateToFfmpeg = (line, state) => {
-  const progress = {};
+const updateToFfmpeg = (line, progress) => {
+  const encoding = {};
   const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
-  // if (tmp === null) continue;
   for (const field of fields) {
-    progress[field.split("=")[0]] = field
+    encoding[field.split("=")[0]] = field
       .split("=")[1]
       .replace(/\r/g, "")
       .trim();
   }
-  progress["frame"] = parseInt(progress["frame"]);
-  progress["fps"] = parseFloat(progress["fps"]);
-  progress["q"] = parseFloat(progress["q"]);
+  encoding["frame"] = parseInt(encoding["frame"]);
+  encoding["fps"] = parseFloat(encoding["fps"]);
+  encoding["q"] = parseFloat(encoding["q"]);
 
   // 進捗率 1.0 で 100%
-  state.now_num = progress.time
+  progress.now_num = encoding.time
     .split(":")
     .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
-  state.total_num = state.duration;
-  state.log =
-    `(${progress.step}/${progress.steps}) FFmpeg: ` +
-    //'frame= ' +
-    //progress.frame +
-    //' fps=' +
-    //progress.fps +
-    //' size=' +
-    //progress.size +
-    " time=" +
-    progress.time +
-    //' bitrate=' +
-    //progress.bitrate +
-    " speed=" +
-    progress.speed;
-  state.log_updated = true;
-  return state;
+  progress.total_num = progress.duration;
+  progress.log = `(${progress.step}/${progress.steps}) FFmpeg: time=${encoding.time} speed=${encoding.speed}`;
+  progress.log_updated = true;
+  return progress;
 };
 
-const udpateToAviSynth = (str, progress) => {
-  const raw_avisynth_data = str.replace(/AviSynth\s/, "");
+const udpateToAviSynth = (line, progress) => {
+  const raw_avisynth_data = line.replace(/AviSynth\s/, "");
   if (raw_avisynth_data.startsWith("Creating")) {
-    const avisynth_reg = /Creating\slwi\sindex\sfile\s(\d+)%/;
     progress.total_num = 200;
-    progress.now_num = Number(raw_avisynth_data.match(avisynth_reg)[1]);
+    progress.now_num = Number(
+      raw_avisynth_data.match(/Creating\slwi\sindex\sfile\s(\d+)%/)[1]
+    );
     progress.now_num += progress.avisynth_flag ? 100 : 0;
     progress.avisynth_flag = progress.avisynth_flag
       ? true
@@ -59,11 +46,12 @@ const udpateToAviSynth = (str, progress) => {
   return progress;
 };
 
-const updateToLogoFrame = (str, progress) => {
-  const raw_logoframe_data = str.replace(/logoframe\s/, "");
+const updateToLogoFrame = (line, progress) => {
+  const raw_logoframe_data = line.replace(/logoframe\s/, "");
   if (raw_logoframe_data.startsWith("checking") && raw_logoframe_data) {
-    const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
-    const logoframe = raw_logoframe_data.match(logoframe_reg);
+    const logoframe = raw_logoframe_data.match(
+      /checking\s*(\d+)\/(\d+)\sended./
+    );
     progress.now_num = Number(logoframe[1]);
     progress.total_num = Number(logoframe[2]);
     progress.log_updated = true;
@@ -72,66 +60,45 @@ const updateToLogoFrame = (str, progress) => {
   return progress;
 };
 
-const updateToChapter = (str, progress) => {
-  const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
-  switch (raw_chapter_exe_data) {
-    case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
-      raw_chapter_exe_data: {
-      //chapter_exeでの総フレーム数取得
-      const movie_frame_reg = /\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/;
-      progress.total_num = Number(
-        raw_chapter_exe_data.match(movie_frame_reg)[1]
-      );
-      progress.log_updated = true;
-      break;
-    }
-    case raw_chapter_exe_data.startsWith("mute") && raw_chapter_exe_data: {
-      //現在のフレーム数取得
-      const chapter_reg = /mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/;
-      progress.now_num = Number(raw_chapter_exe_data.match(chapter_reg)[1]);
-      progress.log_updated = true;
-      break;
-    }
-    case raw_chapter_exe_data.startsWith("end") && raw_chapter_exe_data: {
-      //chapter_exeの終了検知
-      progress.now_num = progress.total_num;
-      progress.log_updated = true;
-      break;
-    }
-    default: {
-      break;
-    }
+const updateToChapter = (line, progress) => {
+  const raw_chapter_exe_data = line.replace(/chapter_exe\s/, "");
+  if (raw_chapter_exe_data.startsWith("\tVideo Frames")) {
+    progress.total_num = Number(
+      raw_chapter_exe_data.match(/\tVideo\sFrames:\s(\d+)\s\[\d+\.\d+fps\]/)[1]
+    );
+    progress.log_updated = true;
+  }
+  if (raw_chapter_exe_data.startsWith("mute")) {
+    progress.now_num = Number(
+      raw_chapter_exe_data.match(/mute\s?\d+:\s(\d+)\s\-\s\d+フレーム/)[1]
+    );
+    progress.log_updated = true;
+  }
+  if (raw_chapter_exe_data.startsWith("end")) {
+    progress.now_num = progress.total_num;
+    progress.log_updated = true;
   }
   progress.log = `(${progress.step}/${progress.steps}) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
   return progress;
 };
 
-const applyUdpate = (str, progress) => {
-  progress.steps = 4;
-  if (str.startsWith("AviSynth") && str) {
-    //AviSynth+
-    progress.step = 1;
-    return udpateToAviSynth(str, progress);
-  }
-
-  if (str.startsWith("chapter_exe") && str) {
-    //chapter_exe
-    progress.step = 2;
-    return updateToChapter(str, progress);
-  }
-
-  if (str.startsWith("logoframe") && str) {
-    //logoframe
-    progress.step = 3;
-    return updateToLogoFrame(str, progress);
-  }
-
-  if (str.startsWith("frame") && str) {
-    progress.step = 4;
-    return updateToFfmpeg(str, progress);
+const applyUdpate = (line, progress) => {
+  const steps = new Map([
+    ["AviSynth", udpateToAviSynth],
+    ["chapter_exe", updateToChapter],
+    ["logoframe", updateToLogoFrame],
+    ["frame", updateToFfmpeg],
+  ]);
+  progress.steps = steps.size;
+  progress.step = 0;
+  for (const [text, fn] of steps) {
+    progress.step += 1;
+    if (line.startsWith(text)) {
+      return fn(line, progress);
+    }
   }
   //進捗表示に必要ない出力データを流す
-  console.log(str);
+  console.log(line);
   return progress;
 };
 
