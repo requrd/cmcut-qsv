@@ -30,9 +30,10 @@ const updateToFfmpeg = (line, progress) => {
 const udpateToAviSynth = (line, progress) => {
   const raw_avisynth_data = line.replace(/AviSynth\s/, "");
   if (raw_avisynth_data.startsWith("Creating")) {
-    const avisynth_reg = /Creating\slwi\sindex\sfile\s(\d+)%/;
     progress.total_num = 200;
-    progress.now_num = Number(raw_avisynth_data.match(avisynth_reg)[1]);
+    progress.now_num = Number(
+      raw_avisynth_data.match(/Creating\slwi\sindex\sfile\s(\d+)%/)[1]
+    );
     progress.now_num += progress.avisynth_flag ? 100 : 0;
     progress.avisynth_flag = progress.avisynth_flag
       ? true
@@ -48,8 +49,9 @@ const udpateToAviSynth = (line, progress) => {
 const updateToLogoFrame = (line, progress) => {
   const raw_logoframe_data = line.replace(/logoframe\s/, "");
   if (raw_logoframe_data.startsWith("checking") && raw_logoframe_data) {
-    const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
-    const logoframe = raw_logoframe_data.match(logoframe_reg);
+    const logoframe = raw_logoframe_data.match(
+      /checking\s*(\d+)\/(\d+)\sended./
+    );
     progress.now_num = Number(logoframe[1]);
     progress.total_num = Number(logoframe[2]);
     progress.log_updated = true;
