@@ -41,8 +41,8 @@ const updateToFfmpeg = (line, state) => {
   return state;
 };
 
-const udpateToAviSynth = (str, progress) => {
-  const raw_avisynth_data = str.replace(/AviSynth\s/, "");
+const udpateToAviSynth = (line, progress) => {
+  const raw_avisynth_data = line.replace(/AviSynth\s/, "");
   if (raw_avisynth_data.startsWith("Creating")) {
     const avisynth_reg = /Creating\slwi\sindex\sfile\s(\d+)%/;
     progress.total_num = 200;
@@ -59,8 +59,8 @@ const udpateToAviSynth = (str, progress) => {
   return progress;
 };
 
-const updateToLogoFrame = (str, progress) => {
-  const raw_logoframe_data = str.replace(/logoframe\s/, "");
+const updateToLogoFrame = (line, progress) => {
+  const raw_logoframe_data = line.replace(/logoframe\s/, "");
   if (raw_logoframe_data.startsWith("checking") && raw_logoframe_data) {
     const logoframe_reg = /checking\s*(\d+)\/(\d+)\sended./;
     const logoframe = raw_logoframe_data.match(logoframe_reg);
@@ -72,8 +72,8 @@ const updateToLogoFrame = (str, progress) => {
   return progress;
 };
 
-const updateToChapter = (str, progress) => {
-  const raw_chapter_exe_data = str.replace(/chapter_exe\s/, "");
+const updateToChapter = (line, progress) => {
+  const raw_chapter_exe_data = line.replace(/chapter_exe\s/, "");
   switch (raw_chapter_exe_data) {
     case raw_chapter_exe_data.startsWith("\tVideo Frames") &&
       raw_chapter_exe_data: {
@@ -106,32 +106,32 @@ const updateToChapter = (str, progress) => {
   return progress;
 };
 
-const applyUdpate = (str, progress) => {
+const applyUdpate = (line, progress) => {
   progress.steps = 4;
-  if (str.startsWith("AviSynth") && str) {
+  if (line.startsWith("AviSynth") && line) {
     //AviSynth+
     progress.step = 1;
-    return udpateToAviSynth(str, progress);
+    return udpateToAviSynth(line, progress);
   }
 
-  if (str.startsWith("chapter_exe") && str) {
+  if (line.startsWith("chapter_exe") && line) {
     //chapter_exe
     progress.step = 2;
-    return updateToChapter(str, progress);
+    return updateToChapter(line, progress);
   }
 
-  if (str.startsWith("logoframe") && str) {
+  if (line.startsWith("logoframe") && line) {
     //logoframe
     progress.step = 3;
-    return updateToLogoFrame(str, progress);
+    return updateToLogoFrame(line, progress);
   }
 
-  if (str.startsWith("frame") && str) {
+  if (line.startsWith("frame") && line) {
     progress.step = 4;
-    return updateToFfmpeg(str, progress);
+    return updateToFfmpeg(line, progress);
   }
   //進捗表示に必要ない出力データを流す
-  console.log(str);
+  console.log(line);
   return progress;
 };
 
