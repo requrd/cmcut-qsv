@@ -2,7 +2,7 @@
  * 取得したログから状態を更新する
  * @param {string} line -  e.g." frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x"
  * @param {Object} progress
- * @returns state
+ * @returns progress - 更新済みのprogress
  */
 const updateToFfmpeg = (line, progress) => {
   const encoding = {};
