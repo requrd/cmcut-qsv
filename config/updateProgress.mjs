@@ -1,17 +1,15 @@
 /**
  * 取得したログから状態を更新する
- * @param {string} str
+ * @param {string} line -  e.g." frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x"
  * @param {Object} state
  * @returns state
  */
-const updateToFfmpeg = (str, state) => {
-  //FFmpeg
-  // frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x
+const updateToFfmpeg = (line, state) => {
   const progress = {};
-  let tmp = (str + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
+  const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
   // if (tmp === null) continue;
-  for (let j = 0; j < tmp.length; j++) {
-    progress[tmp[j].split("=")[0]] = tmp[j]
+  for (const field of fields) {
+    progress[field.split("=")[0]] = field
       .split("=")[1]
       .replace(/\r/g, "")
       .trim();
