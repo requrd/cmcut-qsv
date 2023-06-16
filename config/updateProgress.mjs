@@ -7,7 +7,6 @@
 const updateToFfmpeg = (line, progress) => {
   const encoding = {};
   const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
-  // if (tmp === null) continue;
   for (const field of fields) {
     encoding[field.split("=")[0]] = field
       .split("=")[1]
@@ -23,20 +22,7 @@ const updateToFfmpeg = (line, progress) => {
     .split(":")
     .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
   progress.total_num = progress.duration;
-  progress.log =
-    `(${progress.step}/${progress.steps}) FFmpeg: ` +
-    //'frame= ' +
-    //progress.frame +
-    //' fps=' +
-    //progress.fps +
-    //' size=' +
-    //progress.size +
-    " time=" +
-    encoding.time +
-    //' bitrate=' +
-    //progress.bitrate +
-    " speed=" +
-    encoding.speed;
+  progress.log = `(${progress.step}/${progress.steps}) FFmpeg: time=${encoding.time} speed=${encoding.speed}`;
   progress.log_updated = true;
   return progress;
 };
