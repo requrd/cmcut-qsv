@@ -1,29 +1,29 @@
 /**
  * 取得したログから状態を更新する
  * @param {string} line -  e.g." frame= 2847 fps=0.0 q=-1.0 Lsize=  216432kB time=00:01:35.64 bitrate=18537.1kbits/s speed= 222x"
- * @param {Object} state
+ * @param {Object} progress
  * @returns state
  */
-const updateToFfmpeg = (line, state) => {
-  const progress = {};
+const updateToFfmpeg = (line, progress) => {
+  const encoding = {};
   const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
   // if (tmp === null) continue;
   for (const field of fields) {
-    progress[field.split("=")[0]] = field
+    encoding[field.split("=")[0]] = field
       .split("=")[1]
       .replace(/\r/g, "")
       .trim();
   }
-  progress["frame"] = parseInt(progress["frame"]);
-  progress["fps"] = parseFloat(progress["fps"]);
-  progress["q"] = parseFloat(progress["q"]);
+  encoding["frame"] = parseInt(encoding["frame"]);
+  encoding["fps"] = parseFloat(encoding["fps"]);
+  encoding["q"] = parseFloat(encoding["q"]);
 
   // 進捗率 1.0 で 100%
-  state.now_num = progress.time
+  progress.now_num = encoding.time
     .split(":")
     .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
-  state.total_num = state.duration;
-  state.log =
+  progress.total_num = progress.duration;
+  progress.log =
     `(${progress.step}/${progress.steps}) FFmpeg: ` +
     //'frame= ' +
     //progress.frame +
@@ -32,13 +32,13 @@ const updateToFfmpeg = (line, state) => {
     //' size=' +
     //progress.size +
     " time=" +
-    progress.time +
+    encoding.time +
     //' bitrate=' +
     //progress.bitrate +
     " speed=" +
-    progress.speed;
-  state.log_updated = true;
-  return state;
+    encoding.speed;
+  progress.log_updated = true;
+  return progress;
 };
 
 const udpateToAviSynth = (line, progress) => {
