@@ -40,16 +40,8 @@ encode:
     cmd: "%NODE% %ROOT%/config/enc.mjs"
     suffix: .mp4
     rate: 4.0
-  - name: H.264_QSV
-    cmd: "%NODE% %ROOT%/config/qsv.js"
-    suffix: .mp4
-    rate: 4.0
   - name: jlse
     cmd: "%NODE% %ROOT%/config/jlse.mjs"
-    suffix: .mp4
-    rate: 4.0
-  - name: jlse-qsv
-    cmd: "%NODE% %ROOT%/config/jlse-qsv.js"
     suffix: .mp4
     rate: 4.0
 
