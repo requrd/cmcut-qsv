@@ -93,28 +93,19 @@ const updateToChapter = (line, progress) => {
 };
 
 const applyUdpate = (line, progress) => {
-  progress.steps = 4;
-  if (line.startsWith("AviSynth") && line) {
-    //AviSynth+
-    progress.step = 1;
-    return udpateToAviSynth(line, progress);
-  }
-
-  if (line.startsWith("chapter_exe") && line) {
-    //chapter_exe
-    progress.step = 2;
-    return updateToChapter(line, progress);
-  }
-
-  if (line.startsWith("logoframe") && line) {
-    //logoframe
-    progress.step = 3;
-    return updateToLogoFrame(line, progress);
-  }
-
-  if (line.startsWith("frame") && line) {
-    progress.step = 4;
-    return updateToFfmpeg(line, progress);
+  const steps = new Map([
+    ["AviSynth", udpateToAviSynth],
+    ["chapter_exe", updateToChapter],
+    ["logoframe", updateToLogoFrame],
+    ["frame", updateToFfmpeg],
+  ]);
+  progress.steps = steps.size;
+  progress.step = 0;
+  for (const [text, fn] of steps) {
+    progress.step += 1;
+    if (line.startsWith(text)) {
+      return fn(line, progress);
+    }
   }
   //進捗表示に必要ない出力データを流す
   console.log(line);
