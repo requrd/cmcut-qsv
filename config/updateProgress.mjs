@@ -24,7 +24,7 @@ const updateToFfmpeg = (line, state) => {
     .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
   state.total_num = state.duration;
   state.log =
-    "(4/4) FFmpeg: " +
+    `(${progress.step}/${progress.steps}) FFmpeg: ` +
     //'frame= ' +
     //progress.frame +
     //' fps=' +
@@ -55,7 +55,7 @@ const udpateToAviSynth = (str, progress) => {
       : false;
   }
   progress.log_updated = true;
-  progress.log = `(1/4) AviSynth:Creating lwi index files`;
+  progress.log = `(${progress.step}/${progress.steps}) AviSynth:Creating lwi index files`;
   return progress;
 };
 
@@ -68,7 +68,7 @@ const updateToLogoFrame = (str, progress) => {
     progress.total_num = Number(logoframe[2]);
     progress.log_updated = true;
   }
-  progress.log = `(3/4) logoframe: ${progress.now_num}/${progress.total_num}`;
+  progress.log = `(${progress.step}/${progress.steps}) logoframe: ${progress.now_num}/${progress.total_num}`;
   return progress;
 };
 
@@ -102,27 +102,32 @@ const updateToChapter = (str, progress) => {
       break;
     }
   }
-  progress.log = `(2/4) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
+  progress.log = `(${progress.step}/${progress.steps}) Chapter_exe: ${progress.now_num}/${progress.total_num}`;
   return progress;
 };
 
 const applyUdpate = (str, progress) => {
+  progress.steps = 4;
   if (str.startsWith("AviSynth") && str) {
     //AviSynth+
+    progress.step = 1;
     return udpateToAviSynth(str, progress);
   }
 
   if (str.startsWith("chapter_exe") && str) {
     //chapter_exe
+    progress.step = 2;
     return updateToChapter(str, progress);
   }
 
   if (str.startsWith("logoframe") && str) {
     //logoframe
+    progress.step = 3;
     return updateToLogoFrame(str, progress);
   }
 
   if (str.startsWith("frame") && str) {
+    progress.step = 4;
     return updateToFfmpeg(str, progress);
   }
   //進捗表示に必要ない出力データを流す
