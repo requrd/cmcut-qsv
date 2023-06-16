@@ -45,6 +45,8 @@ const getJlseProcess = (input, output) => {
     log: "",
     // 進捗計算のために動画の長さを取得
     duration: await getDuration(input),
+    steps: 4,
+    step: 0,
   };
   const child = getJlseProcess(input, process.env.OUTPUT);
   /**
