@@ -18,20 +18,10 @@ const updateToFfmpeg = (line, state) => {
   progress["fps"] = parseFloat(progress["fps"]);
   progress["q"] = parseFloat(progress["q"]);
 
-  let current = 0;
-  const times = progress.time.split(":");
-  for (let i = 0; i < times.length; i++) {
-    if (i == 0) {
-      current += parseFloat(times[i]) * 3600;
-    } else if (i == 1) {
-      current += parseFloat(times[i]) * 60;
-    } else if (i == 2) {
-      current += parseFloat(times[i]);
-    }
-  }
-
   // 進捗率 1.0 で 100%
-  state.now_num = current;
+  state.now_num = progress.time
+    .split(":")
+    .reduce((prev, curr, i) => prev + parseFloat(curr) * 60 ** (2 - i), 0);
   state.total_num = state.duration;
   state.log =
     "(4/4) FFmpeg: " +
