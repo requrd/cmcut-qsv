@@ -77,6 +77,7 @@ WORKDIR /app
 COPY config /app/config
 COPY logos /join_logo_scp_trial/logo
 COPY settings /app/settings
-RUN tail -n +2 /app/settings/JLparam_set2.csv >> /join_logo_scp_trial/setting/JLparam_set2.csv
+RUN tail -n +2 /app/settings/JLparam_set2.csv >> /join_logo_scp_trial/setting/JLparam_set2.csv &&\
+    sed -ie "s/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1)/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1, fpsnum=30000, fpsden=1001)/g" /join_logo_scp_trial/src/jlse.js
 ENTRYPOINT ["npm"]
 CMD ["start"]
