@@ -79,7 +79,6 @@ COPY logos /join_logo_scp_trial/logo
 COPY settings /app/settings
 RUN mv /app/settings/ChList.csv /join_logo_scp_trial/setting/ChList.csv &&\
     tail -n +2 /app/settings/JLparam_set2.csv >> /join_logo_scp_trial/setting/JLparam_set2.csv &&\
-    sed -ie "s/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1)/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1, fpsnum=30000, fpsden=1001)/g" /join_logo_scp_trial/src/jlse.js &&\
-    sed -ie "s/アニマックス/ＢＳアニマックス/g" /join_logo_scp_trial/setting/ChList.csv
+    sed -ie "s/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1)/LWLibavVideoSource(TSFilePath, repeat=true, dominance=1, fpsnum=30000, fpsden=1001)/g" /join_logo_scp_trial/src/jlse.js
 ENTRYPOINT ["npm"]
 CMD ["start"]
