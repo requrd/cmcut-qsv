@@ -7,6 +7,9 @@
 const updateToFfmpeg = (line, progress) => {
   const encoding = {};
   const fields = (line + " ").match(/[A-z]*=[A-z,0-9,\s,.,\/,:,-]* /g);
+  if (fields === null) {
+    return progress;
+  }
   for (const field of fields) {
     encoding[field.split("=")[0]] = field
       .split("=")[1]
