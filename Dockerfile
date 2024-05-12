@@ -1,8 +1,8 @@
-FROM requrd/avisynth-plus:latest as build
+FROM ghcr.io/tobitti0/docker-avisynthplus:5.1-ubuntu2004 as build
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NODE_VERSION=14
-ENV EPGSTATION_VERSION=v2.0.8
+ENV NODE_VERSION=18
+ENV EPGSTATION_VERSION=v2.9.0
 
 RUN set -xe && \
     apt-get update && \
@@ -49,7 +49,7 @@ RUN set -xe && \
     cd /tmp && \
     git clone https://github.com/l3tnun/EPGStation.git -b ${EPGSTATION_VERSION}
 
-FROM requrd/avisynth-plus:latest as release
+FROM ghcr.io/tobitti0/docker-avisynthplus:5.1-ubuntu2004 as release
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build /join_logo_scp_trial /join_logo_scp_trial
 COPY --from=build /tmp/EPGStation /app
