@@ -30,7 +30,7 @@ const updateToFfmpeg = (line, progress) => {
   return progress;
 };
 
-const udpateToAviSynth = (line, progress) => {
+const updateToAviSynth = (line, progress) => {
   const raw_avisynth_data = line.replace(/AviSynth\s/, "");
   if (raw_avisynth_data.startsWith("Creating")) {
     progress.total_num = 200;
@@ -41,8 +41,8 @@ const udpateToAviSynth = (line, progress) => {
     progress.avisynth_flag = progress.avisynth_flag
       ? true
       : progress.now_num == 100
-      ? true
-      : false;
+        ? true
+        : false;
   }
   progress.log_updated = true;
   progress.log = `(${progress.step}/${progress.steps}) AviSynth:Creating lwi index files`;
@@ -85,9 +85,9 @@ const updateToChapter = (line, progress) => {
   return progress;
 };
 
-const applyUdpate = (line, progress) => {
+const applyUpdate = (line, progress) => {
   const steps = new Map([
-    ["AviSynth", udpateToAviSynth],
+    ["AviSynth", updateToAviSynth],
     ["chapter_exe", updateToChapter],
     ["logoframe", updateToLogoFrame],
     ["frame", updateToFfmpeg],
@@ -112,7 +112,7 @@ const applyUdpate = (line, progress) => {
  * @returns Object - 更新済みの進捗
  */
 const updateProgress = (line, progress) => {
-  progress = applyUdpate(line, progress);
+  progress = applyUpdate(line, progress);
   progress.percent = progress.now_num / progress.total_num;
   if (progress.log_updated) {
     console.log(
