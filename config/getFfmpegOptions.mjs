@@ -37,6 +37,7 @@ const getFfmpegOptions = () => {
 
   // その他設定
   Array.prototype.push.apply(args, [
+    "-stats",
     "-vf",
     videoFilter,
     "-preset",
