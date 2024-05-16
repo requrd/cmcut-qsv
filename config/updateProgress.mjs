@@ -97,7 +97,12 @@ const applyUpdate = (line, progress) => {
   for (const [text, fn] of steps) {
     progress.step += 1;
     if (line.startsWith(text)) {
-      return fn(line, progress);
+      try {
+        return fn(line, progress);
+      } catch (e) {
+        console.error(e);
+        return progress
+      }
     }
   }
   //進捗表示に必要ない出力データを流す
