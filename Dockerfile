@@ -2,12 +2,12 @@ FROM ghcr.io/tobitti0/docker-avisynthplus:5.1-ubuntu2004 as build
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VERSION=18
-ENV EPGSTATION_VERSION=v2.9.0
+ENV EPGSTATION_VERSION=v2.9.1
 
 RUN set -xe && \
     apt-get update && \
     apt-get install --no-install-recommends -y \
-      curl git make gcc g++ cmake libboost-all-dev
+    curl git make gcc g++ cmake libboost-all-dev
 
 # join_logo_scp_trial build
 RUN cd /tmp/ && \
