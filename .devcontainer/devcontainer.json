@@ -7,5 +7,35 @@
     "remoteUser": "vscode",
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
-    ]
+    ],
+    "customizations": {
+        "vscode": {
+            // Scans builtin modules as well
+            "node-module-intellisense.scanBuiltinModules": true,
+            // Scans devDependencies as well
+            "node-module-intellisense.scanDevDependencies": true,
+            // Scans file modules as well
+            "node-module-intellisense.scanFileModules": true,
+            /**
+               * Scans alternative module paths (eg. Search on ${workspcaceRoot}/lib).
+               * Useful when using packages like (https://www.npmjs.com/package/app-module-path) to manage require paths folder.
+               **/
+            "node-module-intellisense.modulePaths": [
+                "/app/node_modules"
+            ],
+            // File module extensions
+            "node-module-intellisense.fileModuleExtensions": [
+                ".js",
+                ".jsx",
+                ".ts",
+                ".d.ts",
+                ".tsx",
+                ".vue",
+                ".json"
+            ],
+            "extensions": [
+                "leizongmin.node-module-intellisense"
+            ]
+        }
+    }
 }
