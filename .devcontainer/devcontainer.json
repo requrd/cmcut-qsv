@@ -1,0 +1,11 @@
+{
+    "build": {
+        "dockerfile": "./Dockerfile.dev"
+    },
+    //"initializeCommand": "/bin/sh .devcontainer/postCreateCommand.sh",
+    "postCreateCommand": "bash",
+    "remoteUser": "vscode",
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+    ]
+}
