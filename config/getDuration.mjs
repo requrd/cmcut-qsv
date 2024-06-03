@@ -3,7 +3,7 @@ const ffprobe = process.env.FFPROBE;
 /**
  * 動画長取得関数
  * @param {string} filePath ファイルパス
- * @return number 動画長を返す (秒)
+ * @return Promise<int> 動画長を返す (秒)
  */
 const getDuration = (filePath) => {
   return new Promise((resolve, reject) => {
