@@ -41,8 +41,8 @@ const updateToAviSynth = (line, progress) => {
     progress.avisynth_flag = progress.avisynth_flag
       ? true
       : progress.now_num == 100
-        ? true
-        : false;
+      ? true
+      : false;
   }
   progress.log_updated = true;
   progress.log = `(${progress.step}/${progress.steps}) AviSynth:Creating lwi index files`;
@@ -101,7 +101,7 @@ const applyUpdate = (line, progress) => {
         return fn(line, progress);
       } catch (e) {
         console.error(e);
-        return progress
+        return progress;
       }
     }
   }
