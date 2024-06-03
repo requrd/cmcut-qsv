@@ -20,7 +20,11 @@ const fetch_data = async (url, query) => {
     handle_error(error);
   }
 };
-
+/**
+ * 対象のレコードのサムネイルを再生成する
+ * @param {string} record_id
+ * @param {string?} video_file_id
+ */
 const reGenerateThumbnail = async (record_id, video_file_id) => {
   try {
     const record = await fetch_data(`/api/recorded/${record_id}`, {
