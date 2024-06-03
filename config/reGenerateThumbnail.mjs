@@ -8,7 +8,12 @@ const handle_error = (error) => {
   console.error(`Error! HTTP Status: ${status} ${statusText}\nURL:${url}`);
   throw error;
 };
-
+/**
+ * エンドポイントからデータを取得する
+ * @param {string} url
+ * @param {Object} query
+ * @returns Object
+ */
 const fetch_data = async (url, query) => {
   try {
     const response = await axios.get(url, {
