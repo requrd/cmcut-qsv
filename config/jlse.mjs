@@ -4,8 +4,12 @@ import { getDuration } from "./getDuration.mjs";
 import { getFfmpegOptions } from "./getFfmpegOptions.mjs";
 import { updateProgress } from "./updateProgress.mjs";
 
-// const ffmpeg = process.env.FFMPEG;
-
+/**
+ * jlseの引数を生成する
+ * @param {string} input
+ * @param {string} output
+ * @returns
+ */
 const getJlseArgs = (input, output) => [
   "-i",
   input,
