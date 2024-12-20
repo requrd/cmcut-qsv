@@ -1,0 +1,18 @@
+[submodule "join_logo_scp_trial"]
+	path = join_logo_scp_trial
+	url = git@github.com:tobitti0/join_logo_scp_trial.git
+[submodule "lib/chapter_exe"]
+	path = lib/chapter_exe
+	url = git@github.com:tobitti0/chapter_exe.git
+[submodule "lib/join_logo_scp"]
+	path = lib/join_logo_scp
+	url = git@github.com:tobitti0/join_logo_scp.git
+[submodule "lib/logoframe"]
+	path = lib/logoframe
+	url = git@github.com:tobitti0/logoframe.git
+[submodule "lib/tsdivider"]
+	path = lib/tsdivider
+	url = git@github.com:tobitti0/tsdivider.git
+[submodule "lib/delogo-AviSynthPlus-Linux"]
+	path = lib/delogo-AviSynthPlus-Linux
+	url = git@github.com:tobitti0/delogo-AviSynthPlus-Linux.git
