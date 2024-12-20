@@ -36,7 +36,7 @@ RUN mkdir /dist && \
 # node setup tool
 RUN set -xe && \
     curl -O -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x && \
-    mv setup_${NODE_VERSION}.x /lib/setup_node.x
+    mv setup_${NODE_VERSION}.x /dist/setup_node.x
 
 # EPGStation clone
 RUN set -xe && \
@@ -50,6 +50,7 @@ COPY --from=build /dist/chapter_exe /join_logo_scp_trial/bin/chapter_exe
 COPY --from=build /dist/logoframe /join_logo_scp_trial/bin/logoframe
 COPY --from=build /dist/join_logo_scp /join_logo_scp_trial/bin/join_logo_scp
 COPY --from=build /dist/tsdivider /join_logo_scp_trial/bin/tsdivider
+COPY --from=build /dist/setup_node.x /join_logo_scp_trial/setup_node.x
 COPY --from=build /dist/libdelogo.so /usr/local/lib/avisynth/libdelogo.so 
 COPY --from=build /tmp/EPGStation /app
 
