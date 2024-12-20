@@ -45,7 +45,12 @@ RUN set -xe && \
 
 FROM ghcr.io/tobitti0/docker-avisynthplus:5.1-ubuntu2004 as release
 ENV DEBIAN_FRONTEND=noninteractive
-COPY --from=build /join_logo_scp_trial /join_logo_scp_trial
+ADD join_logo_scp_trial /join_logo_scp_trial
+COPY --from=build /dist/chapter_exe /join_logo_scp_trial/bin/chapter_exe
+COPY --from=build /dist/logoframe /join_logo_scp_trial/bin/logoframe
+COPY --from=build /dist/join_logo_scp /join_logo_scp_trial/bin/join_logo_scp
+COPY --from=build /dist/tsdivider /join_logo_scp_trial/bin/tsdivider
+COPY --from=build /dist/libdelogo.so /usr/local/lib/avisynth/libdelogo.so 
 COPY --from=build /tmp/EPGStation /app
 
 WORKDIR /join_logo_scp_trial
@@ -53,8 +58,7 @@ RUN apt update && apt install -y ca-certificates && \
     bash setup_node.x && \
     apt install --no-install-recommends -y nodejs libboost-filesystem-dev libboost-program-options-dev libboost-system-dev && \
     node -v && \
-    npm --version &&\
-    mv libdelogo.so /usr/local/lib/avisynth && \
+    npm --version && \
     ls /usr/local/lib/avisynth && \
     npm install && \
     npm link && \
