@@ -9,40 +9,34 @@ RUN set -xe && \
     apt-get install --no-install-recommends -y \
     curl git make gcc g++ cmake libboost-all-dev
 
-# join_logo_scp_trial build
-RUN cd /tmp/ && \
-    git clone --recursive https://github.com/tobitti0/JoinLogoScpTrialSetLinux.git && \
-    cd /tmp/JoinLogoScpTrialSetLinux && \
-    git submodule foreach git pull origin master && \
-    cd /tmp/JoinLogoScpTrialSetLinux/modules/chapter_exe/src && \
+# build jlse libs
+ADD lib /tmp/lib
+RUN mkdir /dist && \
+    cd /tmp/lib/chapter_exe/src && \
     make && \
-    mv chapter_exe /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp_trial/bin/ && \
-    cd /tmp/JoinLogoScpTrialSetLinux/modules/logoframe/src && \
+    mv chapter_exe /dist && \
+    cd /tmp/lib/logoframe/src && \
     make && \
-    mv logoframe /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp_trial/bin/ && \
-    cd /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp/src && \
+    mv logoframe /dist && \
+    cd /tmp/lib/join_logo_scp/src && \
     make && \
-    mv join_logo_scp /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp_trial/bin/ && \
-    cd /tmp/JoinLogoScpTrialSetLinux/modules/tsdivider/ && \
+    mv join_logo_scp /dist && \
+    cd /tmp/lib/tsdivider/ && \
     mkdir build && \
     cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release .. && \
     make && \
-    mv tsdivider /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp_trial/bin/ && \
-    mv /tmp/JoinLogoScpTrialSetLinux/modules/join_logo_scp_trial /join_logo_scp_trial && \
-    cd /join_logo_scp_trial
-
-# delogo
-RUN set -xe && \
-    git clone https://github.com/tobitti0/delogo-AviSynthPlus-Linux && \
-    cd delogo-AviSynthPlus-Linux/src && \
+    mv tsdivider /dist && \
+    # delogo
+    set -xe && \
+    cd /tmp/lib/delogo-AviSynthPlus-Linux/src && \
     make && \
-    cp libdelogo.so /join_logo_scp_trial
+    cp libdelogo.so /dist
 
 # node setup tool
 RUN set -xe && \
     curl -O -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x && \
-    mv setup_${NODE_VERSION}.x /join_logo_scp_trial/setup_node.x
+    mv setup_${NODE_VERSION}.x /lib/setup_node.x
 
 # EPGStation clone
 RUN set -xe && \
