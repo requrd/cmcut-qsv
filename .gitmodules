@@ -1,6 +1,6 @@
 [submodule "join_logo_scp_trial"]
 	path = join_logo_scp_trial
-	url = git@github.com:tobitti0/join_logo_scp_trial.git
+	url = git@github.com:requrd/join_logo_scp_trial.git
 [submodule "lib/chapter_exe"]
 	path = lib/chapter_exe
 	url = git@github.com:tobitti0/chapter_exe.git
